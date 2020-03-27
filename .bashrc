@@ -127,7 +127,6 @@ export PATH="/opt/Qt5.14.0/5.14.0/gcc_64/bin":$PATH
 #git
 alias gitee="choose_git_remote gitee "
 alias github="choose_git_remote github "
-alias remote="git remote -v"
 choose_git_remote()
 {
     if [ -d .git ]
