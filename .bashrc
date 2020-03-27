@@ -119,11 +119,6 @@ fi
 
 #alias
 alias e='emacs -nw'
-alias ll='ls -l'
-alias llh='ls -l -h'
-alias lla='ls -al'
-alias la='ls -a'
-
 alias c='clear'
 alias m='mpv --no-audio-display --no-video'
 
@@ -132,6 +127,7 @@ export PATH="/opt/Qt5.14.0/5.14.0/gcc_64/bin":$PATH
 #git
 alias gitee="choose_git_remote gitee "
 alias github="choose_git_remote github "
+alias remote="git remote -v"
 choose_git_remote()
 {
     if [ -d .git ]
@@ -161,15 +157,15 @@ alias trash='ls ~/.Trash'
 alias restore=undelfile
 alias cleartrash=cleartrash
 totrash()
-  {
+{
     mv $@ ~/.Trash/
-  } 
+} 
 undelfile()
-  {
+{
     mv -i ~/.Trash/$@ ./
-  } 
+} 
 cleartrash()
-  {
+{
     read -p "clear sure?[n]" confirm
     [ $confirm == 'y' ] || [ $confirm == 'Y' ] && /bin/rm -rf ~/.Trash/*
-  } 
+} 
