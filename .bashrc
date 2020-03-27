@@ -137,6 +137,13 @@ get_git_remote_name()
 }
 choose_git_remote_server()
 {
+    if [ -n "$3" ] && [ "$3" != "-p" ]
+    then
+	echo "para error."
+	echo "gitee/github [repository-name] [-p]"
+	return
+    fi
+	
     oldurl=`git remote -v | awk 'NR==1' | awk '{print $2}'`
     if [ -d .git ]
     then
