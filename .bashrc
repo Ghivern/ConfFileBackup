@@ -125,9 +125,15 @@ alias m='mpv --no-audio-display --no-video'
 export PATH="/opt/Qt5.14.0/5.14.0/gcc_64/bin":$PATH
 
 #git
+#只适用于SSH方式克隆的仓库
 alias gitee="choose_git_remote gitee "
 alias github="choose_git_remote github "
-alias gitremote='git remote -v'
+alias gitremote='get_git_remote_name'
+get_git_remote_name()
+{
+    url=`git remote -v | awk -F "@" '{print $2}'`
+    echo $url | awk -F "." '{print $1}'   
+}
 choose_git_remote()
 {
     if [ -d .git ]
