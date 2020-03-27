@@ -126,33 +126,53 @@ export PATH="/opt/Qt5.14.0/5.14.0/gcc_64/bin":$PATH
 
 #git
 #只适用于SSH方式克隆的仓库
-alias gitee="choose_git_remote gitee "
-alias github="choose_git_remote github "
+alias gitee="choose_git_remote_server gitee "
+alias github="choose_git_remote_server github "
 alias gitremote='get_git_remote_name'
 get_git_remote_name()
 {
     url=`git remote -v | awk -F "@" '{print $2}'`
-    echo $url | awk -F "." '{print $1}'   
+    echo $url | awk -F '[./]' '{print $1 , ":" , $3}'
 }
-choose_git_remote()
+choose_git_remote_server()
 {
+    oldurl=`git remote -v | awk 'NR==1' | awk '{print $2}'`
     if [ -d .git ]
     then
-	if [ -z $2 ]  
-	then
-	    rep=`pwd | awk -F "/" '{print $NF}'`
-	else
-	    rep=$2
-	fi
 	if [ $1 = "github" ]
 	then
 	    remote="github"
 	else
 	    remote="gitee"
 	fi
-	git remote set-url origin git@$remote.com:Ghivern/$rep.git
+	
+	if [ -z "$2" ] || [ "$2" = "-p" ]
+	then
+	    rep=`pwd | awk -F "/" '{print $NF}'`
+	else
+	    rep="$2"
+	fi
+	
+	newurl="git@$remote.com:Ghivern/$rep.git"
+	if [ $oldurl != $newurl ]
+	then
+	    git remote set-url origin $newurl
+	    if [ "$2" = "-p" ]  ||  [ "$3" = "-p" ]
+	    then
+		git push
+		git remote set-url origin $oldurl
+	    fi
+	else
+	    if [ "$2" = "-p" ]  ||  [ "$3" = "-p" ]
+	    then
+		git push
+		echo "The remote server already is $para1, just push to remote."
+	    else
+		echo "The remote server already is $para1."
+	    fi
+	fi
     else
-	echo "usegitee: Repository doesn't exist."
+	echo "Repository doesn't exist."
     fi
 }
 
