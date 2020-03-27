@@ -132,7 +132,8 @@ alias gitremote='get_git_remote_name'
 get_git_remote_name()
 {
     url=`git remote -v | awk -F "@" '{print $2}'`
-    echo $url | awk -F '[./]' '{print $1 , ":" , $3}'
+    echo $url | awk -F '[.]' '{print $1}'
+    git remote -v
 }
 choose_git_remote_server()
 {
@@ -152,7 +153,6 @@ choose_git_remote_server()
 	else
 	    rep="$2"
 	fi
-	
 	newurl="git@$remote.com:Ghivern/$rep.git"
 	if [ $oldurl != $newurl ]
 	then
