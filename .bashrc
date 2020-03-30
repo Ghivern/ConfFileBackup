@@ -124,74 +124,42 @@ alias m='mpv --no-audio-display --no-video'
 
 export PATH="/opt/Qt5.14.0/5.14.0/gcc_64/bin":$PATH
 
-#git
-#只适用于SSH方式克隆的仓库
-alias gitee="choose_git_remote_server gitee "
-alias github="choose_git_remote_server github "
-alias gitremote='get_git_remote_name'
-get_git_remote_name()
-{
-    url=`git remote -v | awk -F "@" '{print $2}'`
-    echo $url | awk -F '[.]' '{print $1}'
-    git remote -v
-}
-choose_git_remote_server()
-{
-    if [ -n "$3" ] && [ "$3" != "-p" ]
-    then
-	echo "para error."
-	echo "gitee/github [repository-name] [-p]"
-	return
-    fi
-	
-    oldurl=`git remote -v | awk 'NR==1' | awk '{print $2}'`
-    if [ -d .git ]
-    then
-	if [ $1 = "github" ]
-	then
-	    remote="github"
-	else
-	    remote="gitee"
-	fi
-	
-	if [ -z "$2" ] || [ "$2" = "-p" ]
-	then
-	    rep=`pwd | awk -F "/" '{print $NF}'`
-	else
-	    rep="$2"
-	fi
-	newurl="git@$remote.com:Ghivern/$rep.git"
-	if [ $oldurl != $newurl ]
-	then
-	    git remote set-url origin $newurl
-	    if [ "$2" = "-p" ]  ||  [ "$3" = "-p" ]
-	    then
-		git push
-		git remote set-url origin $oldurl
-	    fi
-	else
-	    if [ "$2" = "-p" ]  ||  [ "$3" = "-p" ]
-	    then
-		git push
-		echo "The remote server already is $para1, just push to remote."
-	    else
-		echo "The remote server already is $para1."
-	    fi
-	fi
-    else
-	echo "Repository doesn't exist."
-    fi
-}
-
-
 #trash
 alias rm=totrash
-alias trash='ls ~/.Trash'
+alias trash='ls -l ~/.Trash'
 alias restore=undelfile
 alias cleartrash=cleartrash
 totrash()
 {
-    mv $@ ~/.Trash/
+    for pathname in $@
+    do
+	pathname=`echo ${pathname%*/}`
+	if ! [ -e "$pathname" ]
+	then
+	    echo "$pathname doesn't exist."
+	else
+	    name=`echo $pathname | awk -F '/' '{print $NF}'`
+	    if [ -e  ~/.Trash/"$name" ] 
+	    then
+		read -p "prompt $name in Trash? [n]" con
+	       	if ( [ "$con" == 'y' ] || [ "$con" == 'Y' ] )
+		then
+		    /bin/rm -rf ~/.Trash/"$name"
+		else
+		    newname="$name"-other
+		    newpathname="$pathname"-other
+		    while [ -e ~/.Trash/"$newname" ]
+		    do
+			newname="$newname"-other
+			newpathname="$newpathname"-other
+		    done
+		    mv "$pathname" "$newpathname"
+		    pathname="$newpathname"
+		fi
+	    fi
+	    mv "$pathname" ~/.Trash/
+	fi
+    done
 } 
 undelfile()
 {
@@ -200,5 +168,5 @@ undelfile()
 cleartrash()
 {
     read -p "clear sure?[n]" confirm
-    [ $confirm == 'y' ] || [ $confirm == 'Y' ] && /bin/rm -rf ~/.Trash/*
+    [ "$confirm" == 'y' ] || [ "$confirm" == 'Y' ] && /bin/rm -rf ~/.Trash/*
 } 
