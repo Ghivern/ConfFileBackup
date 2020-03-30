@@ -141,7 +141,21 @@ totrash()
 	    name=`echo $pathname | awk -F '/' '{print $NF}'`
 	    if [ -e  ~/.Trash/"$name" ] 
 	    then
-		read -p "prompt $name in Trash? [n]" con
+		if [ -d ~/.Trash/"$name" ]
+		then
+		    trashtype="directory"
+		else
+		    trashtype="file"
+		fi
+		
+		if [ -d "$pathname" ]
+		then
+		    type="directory"
+		else
+		    type="file"
+		fi
+		
+		read -p "prompt $trashtype $name in Trash by the same name $type? [n]" con		
 	       	if ( [ "$con" == 'y' ] || [ "$con" == 'Y' ] )
 		then
 		    /bin/rm -rf ~/.Trash/"$name"
